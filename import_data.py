@@ -60,6 +60,13 @@ for item in data.get("logros_club", []):
 
 db.commit()
 
+print("Importando jugador_temporada...")
+
+for item in data.get("jugador_temporada", []):
+    db.merge(models.JugadorTemporada(**item))
+
+db.commit()
+
 db.close()
 
 print("Importación completada correctamente.")
