@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from .database import SessionLocal
-from . import crud, schemas
+from . import crud, schemas, models
 from .external_api import buscar_equipo_web, buscar_jugador_web
 
 router = APIRouter()
