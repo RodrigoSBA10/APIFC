@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from .database import SessionLocal
 from . import crud, schemas
@@ -85,8 +85,13 @@ def crear_logro_club(logro: schemas.LogroClubCreate, db: Session = Depends(get_d
 
 @router.post("/jugadores")
 def crear_jugador(jugador: schemas.JugadorCreate, db: Session = Depends(get_db)):
-    return crud.crear_jugador(db, jugador)
-
+    try:
+        return crud.crear_jugador(db, jugador)
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
 
 @router.get("/jugadores")
 def listar_jugadores(db: Session = Depends(get_db)):
