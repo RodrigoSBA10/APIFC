@@ -86,12 +86,34 @@ def crear_logro_club(logro: schemas.LogroClubCreate, db: Session = Depends(get_d
 @router.post("/jugadores")
 def crear_jugador(jugador: schemas.JugadorCreate, db: Session = Depends(get_db)):
     try:
-        return crud.crear_jugador(db, jugador)
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=str(e)
+        if jugador.id_externo:
+            existente = db.query(models.Jugador).filter(
+                models.Jugador.id_externo == jugador.id_externo
+            ).first()
+
+            if existente:
+                return existente
+
+        nuevo = models.Jugador(
+            id_externo=jugador.id_externo,
+            nombre=jugador.nombre,
+            pais=jugador.pais,
+            posicion=jugador.posicion,
+            foto=jugador.foto,
         )
+
+        db.add(nuevo)
+        db.commit()
+        db.refresh(nuevo)
+
+        return nuevo
+
+    except Exception as e:
+        db.rollback()
+        return {
+            "error": str(e),
+            "tipo": type(e).__name__
+        }
 
 @router.get("/jugadores")
 def listar_jugadores(db: Session = Depends(get_db)):
