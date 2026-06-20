@@ -130,7 +130,15 @@ def crear_jugador_temporada(
     datos: schemas.JugadorTemporadaCreate,
     db: Session = Depends(get_db)
 ):
-    return crud.crear_jugador_temporada(db, datos)
+    try:
+        return crud.crear_jugador_temporada(db, datos)
+
+    except Exception as e:
+        db.rollback()
+        return {
+            "error": str(e),
+            "tipo": type(e).__name__
+        }
 
 
 @router.get(
