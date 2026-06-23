@@ -94,6 +94,14 @@ def crear_jugador(jugador: schemas.JugadorCreate, db: Session = Depends(get_db))
             if existente:
                 return existente
 
+        else:
+            existente = db.query(models.Jugador).filter(
+                models.Jugador.nombre == jugador.nombre
+            ).first()
+
+            if existente:
+                return existente
+
         nuevo = models.Jugador(
             id_externo=jugador.id_externo,
             nombre=jugador.nombre,
@@ -107,6 +115,10 @@ def crear_jugador(jugador: schemas.JugadorCreate, db: Session = Depends(get_db))
         db.refresh(nuevo)
 
         return nuevo
+
+    except Exception as e:
+        db.rollback()
+        raise e
 
     except Exception as e:
         db.rollback()
